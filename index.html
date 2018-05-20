@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>星云链俄罗斯方块</title>
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<link rel="stylesheet" href="css/mdui.min.css">
+</head>
+
+<body>
+
+	<h1 style="text-align: center;">星云链俄罗斯方块</h1>
+
+
+	<div class="bg">
+		<div id="left">
+			<p id="user">当前用户:</p>
+			<p id="userName">n1bUSoYrgTr7iBUR1LDS5svjLBd6wGdB4Ur</p>
+			<p id="historyScore">历史最高得分:999000</p>
+			<div align="center">
+				<button id="startGame" style="margin:10px auto 5px auto;color: #fff;"
+						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-red-600">开始游戏</button>
+				<button id="checkRankingList" onclick="checkRankingList()" style="margin: 5px auto 10px auto;color: #fff;"
+						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-red-600">查看排行榜</button>
+			</div>
+			<div style="padding: 10px;border: 1px solid black">
+				<p>控制：</p>
+				<p>← 向左移动</p>
+				<p>→ 向右移动</p>
+				<p>↑ 旋转</p>
+				<p>↓ 加速下落</p>
+			</div>
+		</div>
+		<div id="gameBoxBg">
+			<div id="gameBox">
+				<div class="mask">
+					<button id="start">开始游戏</button>
+				</div>
+			</div>
+		</div>
+		<div id="rigth">
+			<div class="next"></div>
+			<div id="level"><span>Level:</span><span class="level">1</span></div>
+			<div id="score"><span>Score:</span><span class="score">0</span></div>
+			<div align="center">
+				<button id="pause" onclick="pause()" style="margin:10px auto 5px auto;color: #fff;"
+						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-red-600">暂停</button>
+			</div>
+
+		</div>
+	</div>
+
+	<script src="js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/nebPay.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/game.js"></script>
+	<script src="js/mdui.min.js"></script>
+	<script>
+		var NebPay = require("nebpay");
+		var nebPay = new NebPay();
+
+		//检查“webExtensionWallet”扩展是否已安装
+		if(typeof(webExtensionWallet) === "undefined") {
+
+		}
+
+		var dappAddress = "n1kyTRfnJj9gyaJHBCwFRWBUNvRX285zfzG";
+
+        $('#startGame').click(function() {
+            $('.mask').css({
+                'display': 'none'
+            })
+            new Game()
+        })
+
+	</script>
+</body>
+
+</html>
