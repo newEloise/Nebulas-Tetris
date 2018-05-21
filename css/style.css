@@ -3,114 +3,165 @@
 	padding: 0px;
 }
 
-waterfall{padding: 1em 0;}
-.waterfall .list-group {
-	margin-right: 14px; }
-.waterfall .list-group > li:first-child {
+html{
+	margin: 0;
 	padding: 0;
-	background-color: white; }
-.waterfall .list-group > li:first-child img {
-	width: 100%;
-	border-top-right-radius: 4px;
-	border-top-left-radius: 4px; }
-.waterfall .list-group > li {
-	background-color: #f5f5f5; }
-
-@media (min-width: 768px) {
-	.waterfall .list-group {
-		width: 346px; } }
-@media (min-width: 992px) {
-	.waterfall .list-group {
-		width: 299px; } }
-@media (min-width: 1200px) {
-	.waterfall .list-group {
-		width: 271px; } }
-
-#noExtension{
-	padding-top: 200px;
-    text-align: center;
-    font-size: 22px;
-    position: absolute;
-    width: 100%;
-    display: none;
+	height: 100%;
 }
-.secret-wrap {
-	margin-top: 80px;
+
+body{
+	margin: 0;
+	padding: 0;
+	min-height: 100%;
+	background:url("../img/bigScreen.jpg");
+	background-size: cover;
 }
-.secret-wrap .item{
-	border-top: 1px solid #ddd;
-	border-bottom: 1px solid #ddd;
-	min-height: 80px;
-	padding:10px;
+
+.bg {
+	width: 710px;
+	border: 1px solid #aaa;
+	border-radius: 5px;
+	padding: 20px;
+	margin: 0px auto;
+	box-shadow: 0 0 5px #999;
+	background: #f5f5f5;
+	font-size: 0;
+	display: flex;
+}
+#gameBoxBg {
+	width: 330px;
+	padding: 8px;
+	background: url(../img/bg.jpg);
+	background-size: auto 100%;
+	background-position-x: 580px;
+}
+#gameBox {
+	width: 330px;
+	height: 450px;
 	overflow: hidden;
+	position: relative;
+}
+
+.mask {
+	width: 100%;
+	height: 100%;
+	background: url(../img/bg.jpg);
+	background-size: auto 100%;
+	background-position-x: 580px;
+	position: absolute;
+	z-index: 1000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.mask button {
+	width: 100px;
+	height: 40px;
+	opacity: 0.7;
+}
+
+.wangge {
+	width: 30px;
+	height: 30px;
+	display: inline-block;
+	border: 1px solid #f0f0f0;
+	border-radius: 5px;
+	box-sizing: border-box;
+	position: absolute;
+	background: #f9f9f9;
+	opacity: 0.9;
+}
+
+.block {
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	font-size: 14px;
+	color: #fff;
+	border: 2px solid #fff;
+	background: #ff9000;
+	box-sizing: border-box;
+	border-radius: 5px;
+	position: absolute;
+}
+
+#left {
+	width: 180px;
+	height: 450px;
+	padding: 11px 10px;
+	box-sizing: border-box;
+}
+#left p {
+	margin: 0;
+	font-size: 13px;
+	color: #555;
+}
+#left #user {
+	width: 100%;
+	font-size: 16px;
+	color: #888;
+	box-sizing: border-box;
 	display: flex;
 	align-items: center;
 }
-.secret-wrap .item:first-child{
-	border-bottom: none;
-}
-.secret-wrap .item:nth-last-child(2){
-	border-top: none;
-}
-.secret-wrap .item .img{
-	height: 60px;
-	width:60px;
-	float: left;
-}
-.secret-wrap .item .img img{
-	width:100%;
-	border-radius: 50%;
-}
-
-.secret-wrap .item .user{
+#left #historyScore{
 	width: 100%;
-	float: left;
-	padding-left: 30px;
-}
-
-.secret-wrap .item .user .time{
-	font-size: 12px;
-	color: #aaa;
-	padding-left: 5px;
-}
-.content{
-	margin-top: 10px;
-}
-
-.info{
-	width:100%;
+	height: 40px;
+	margin: 10px 0;
+	font-size: 16px;
+	color: #888;
+	box-sizing: border-box;
 	display: flex;
-	justify-content: space-between;
-	color: #999;
+	align-items: center;
 }
-.reply{
-	color: #aaa;
-	cursor: pointer;
-	transition: color .3s;
+#left #userName{
+	word-break:normal;
+	word-wrap:break-word;
+	margin: 0;
+	font-size: 14px;
+	color: #888;
 }
 
-.reply:hover{
+#rigth {
+	width: 180px;
+	height: 450px;
+	padding: 11px 10px;
+	box-sizing: border-box;
+}
+#rigth .next {
+	width: 100%;
+	height: 160px;
+	position: relative;
+}
+#rigth #score,
+#rigth #level {
+	width: 100%;
+	height: 40px;
+	margin: 10px 0;
+	font-size: 16px;
+	color: #888;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+}
+#rigth #level .level,
+#rigth #score .score {
+	font-size: 16px;
+	color: #555;
+	margin-left: 5px;
+	margin-top: 0px;
+	transition: 0.3;
+}
+/*#rigth #pause {
+	width: 100%;
+	height: 40px;
+	margin: 10px 0;
 	color: #333;
-}
-
-.inp-wrap{
-	margin-top: 20px;
-	margin-bottom: 50px;
-}
-.inp-wrap textarea{
-	width:500px;
-	margin-bottom: 20px;
-	margin-top: 20px;
-	padding: 10px;
-}
-
-[v-cloak] {
-  display: none;
-}
-.link{
-	margin-top: 30px;
-	text-align: center;
-}
-.link a{
-	color: #000;
+	font-size: 16px;
+}*/
+#rigth p {
+	margin: 0;
+	font-size: 13px;
+	color: #555;
 }
