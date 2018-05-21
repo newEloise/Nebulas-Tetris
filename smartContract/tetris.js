@@ -1,15 +1,17 @@
 "use strict";
 
-var Record = function (address, point) {
-    if (this.verifyAddress(address)) {
-        this.address = address;
+var Record = function (text) {
+    if (text) {
+        var obj = JSON.parse(text);
+        this.id = obj.id;
+        this.address = obj.address;
         this.timestamp = Blockchain.transaction.timestamp;
-        this.point = point;
-    } else if (address !== null || address !== "" || address !== undefined) {
-        let o = JSON.parse(address);
-        this.address = o.address;
-        this.timestamp = o.timestamp;
-        this.point = o.point;
+        this.point = obj.point;
+    } else {
+        this.id = 0;
+        this.address = "";
+        this.timestamp = "";
+        this.point = 0;
     }
 
 };
@@ -17,10 +19,6 @@ var Record = function (address, point) {
 Record.prototype = {
     toString: function () {
         return JSON.stringify(this);
-    },
-    verifyAddress: function (address) {
-        let result = Blockchain.verifyAddress(address);
-        return result === 0 ? false : true;
     }
 };
 
@@ -29,134 +27,81 @@ var TetrisContract = function () {
         stringify: function (obj) {
             return obj.toString();
         },
-        parse: function (str) {
-            return new Record(str);
+        parse: function (text) {
+            return new Record(text);
         }
     });
 
-    LocalContractStorage.defineProperties(this, {
-        worldRecord: {
-            stringify: function (obj) {
-                return obj.toString();
-            },
-            parse: function (str) {
-                return new Record(str);
-            }
-        },
-        adminAddress: null
-    });
+    LocalContractStorage.defineProperty(this, "size");
 
 };
 
 TetrisContract.prototype = {
     init: function () {
-        this.adminAddress = Blockchain.transaction.from;
-
-        return this.gameOver(100000)
+        this.size = 0;
     },
     getRecord: function () {
-        const addr = Blockchain.transaction.from;
-        let record = this.records.get(addr);
-        if (record instanceof Record) {
-            return record;
-        } else {
-            throw new Error("尚无挑战记录");
-        }
-    },
-    getWorldRecord: function () {
-        let worldRecord = this.worldRecord;
-        if (worldRecord instanceof Record) {
-            return worldRecord;
-        } else {
-            throw new Error("尚无世界纪录");
-        }
-    },
-    gameOver: function (point) {
-        const addr = Blockchain.transaction.from;
-        let newRecord = new Record(addr, point);
-        Blockchain.transfer(this.adminAddress, new BigNumber(0.0001));
-        Event.Trigger('transfer', {
-            Transfer: {
-                from: addr,
-                to: this.adminAddress,
-                value: new BigNumber(0.0001)
-            }
-        });
-        this._setWorldRecord(newRecord);
-        this._setRecord(newRecord);
-        let oldRecord = this.records.get(addr);
-        if (oldRecord instanceof Record) {
-            if (parseInt(point) > parseInt(oldRecord)) {
-                this.records.set(addr, newRecord);
-            }
-        } else {
-            this.records.set(addr, newRecord);
-        }
-        return this.records.get(addr);
-    },
-    _setRecord: function (record) {
-        const addr = Blockchain.transaction.from;
-        let oldRecord = this.records.get(addr);
-        if (oldRecord instanceof Record) {
-            if (parseInt(record.point) > parseInt(oldRecord.point)) {
-                this.records.set(addr, record);
+        var addr = Blockchain.transaction.from;
+        for(var i=0; i<this.size; i++){
+            var record = this.records.get(i);
+            if(record.address == addr){
+                return record;
             }
         }
-        return this.records.get(addr);
+        return null;
     },
-    _setWorldRecord: function (record) {
-        let worldRecord = this.worldRecord;
-        if (worldRecord instanceof Record) {
-            if (record instanceof Record) {
-                if (parseInt(record.point) > parseInt(this.worldRecord.point)) {
-                    this.worldRecord = record
+    getRankingList: function () {
+        //取所有记录的前五名
+        var result  = [];
+        var arr = new Array();
+        for(var i=0; i<this.size; i++){
+            arr.push(this.records.get(i));
+        }
+        for(var i=0; i<arr.length; i++){
+            for(var j=i+1; j<arr.length; j++){
+                if(arr[i].point > arr[j].point){
+                    t = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = t;
                 }
-            } else {
-                throw new Error("record格式错误")
             }
-        } else {
-            this.worldRecord = record;
         }
-        return this.worldRecord;
-
+        for(var i=0; i<5; i++){
+            var object = arr[i];
+            result.push(object);
+        }
+        return JSON.stringify(result);
     },
-    revival: function () {
-        try {
-            const addr = Blockchain.transaction.from;
-            Blockchain.transfer(this.adminAddress, new BigNumber(0.001));
-            Event.Trigger('transfer', {
-                Transfer: {
-                    from: addr,
-                    to: this.adminAddress,
-                    value: new BigNumber(0.001)
+    setRocord: function(point){
+        var addr = Blockchain.transaction.from;
+        var flag = 0;
+        for(var i=0; i<this.size; i++){
+            var record = this.records.get(i);
+            if(record.address == addr){
+                if (parseInt(point) > parseInt(record.point)) {
+                    var newRecord = new Record();
+                    newRecord.id = i;
+                    newRecord.address = addr;
+                    newRecord.timestamp = Blockchain.transaction.timestamp;
+                    newRecord.point = point;
+                    this.records.set(i, newRecord);
+                    flag = 1;
+                    break;
                 }
-            });
-            return {"payed": true};
-        } catch (e) {
-            return {"payed": false};
+            }
         }
-
-    },
-    setAdminAddress: function (address) {
-        if (Blockchain.transaction.from === this.adminAddress) {
-            this.adminAddress = address;
-        } else {
-            throw new Error("Admin only");
+        if(flag == 0){
+            var newRecord = new Record();
+            newRecord.id = this.size;
+            newRecord.address = addr;
+            newRecord.timestamp = Blockchain.transaction.timestamp;
+            newRecord.point = point;
+            this.records.set(this.size, newRecord);
+            this.size += 1;
         }
     },
-    takeout: function (value) {
-        if (Blockchain.transaction.from === this.adminAddress) {
-            Blockchain.transfer(this.adminAddress, value);
-            Event.Trigger("transfer", {
-                Transfer: {
-                    to: this.adminAddress,
-                    value: value
-                }
-            })
-        } else {
-            throw new Error("Admin only");
-        }
-
+    getLen :function () {
+        return this.size;
     }
 };
 
