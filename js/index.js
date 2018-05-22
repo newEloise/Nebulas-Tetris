@@ -14,7 +14,7 @@ $(function() {
   });
   
   // here we create fuscia sparkles
-  $("h1").sparkleh({
+  $(".title").sparkleh({
     count: 80,
     color: "#ff0080"
   });
@@ -24,6 +24,11 @@ $(function() {
   $("p").sparkleh({
     count: 20,
     color: "#00ff00"
+  });
+
+  $(".extension").sparkleh({
+      count: 20,
+      color: "#0b0cff"
   });
   
   

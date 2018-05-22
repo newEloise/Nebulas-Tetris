@@ -9,45 +9,83 @@
 </head>
 
 <body>
-    <div style="text-align: center;">
-		<h1 style="color: #ddd;width: 710px;font-size: 1.9em;margin:1em auto;text-shadow: 0 2px 1px black;">星云链俄罗斯方块</h1>
+    <div class="title">
+		<h1 id="title">星云链俄罗斯方块</h1>
 	</div>
 
 	<div class="bg">
 		<div id="left">
-			<p id="user">当前用户:</p>
-			<p id="userName">n1bUSoYrgTr7iBUR1LDS5svjLBd6wGdB4Ur</p>
-			<p id="historyScore">历史最高得分:999000</p>
+            <div class="box">
+                <p id="user">当前用户地址:</p>
+                <p id="userName">n1bUSoYrgTr7iBUR1LDS5svjLBd6wGdB4Ur</p>
+                <p id="historyScore">历史最高得分:</p>
+                <p id="historyPoint">0</p>
+                <div class="box_ribbon"></div>
+            </div>
 			<div align="center">
 				<button id="getRankingList" style="margin: 5px auto 10px auto;color: #fff;"
-						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-red-600">查看排行榜</button>
+						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-400">查看排行榜</button>
 			</div>
-			<div style="padding: 10px;border: 1px solid black">
-				<p>控制：</p>
-				<p>← 向左移动</p>
-				<p>→ 向右移动</p>
-				<p>↑ 旋转</p>
-				<p>↓ 加速下落</p>
+			<div class="box controlBox">
+				<p style="font-weight: 700;">控制：</p>
+				<p style="text-align: center;">← 向左移动</p>
+				<p style="text-align: center;">→ 向右移动</p>
+				<p style="text-align: center;">↑ 变形旋转</p>
+				<p style="text-align: center;">↓ 加速下落</p>
+                <div class="box_ribbon"></div>
 			</div>
 		</div>
-		<div id="gameBoxBg">
+		<div id="gameBoxBg" class="sparkley">
 			<div id="gameBox">
-				<div class="mask">
+				<div class="mask sparkley">
 					<button id="startGame" style="margin:10px auto 5px auto;color: #fff;"
-							class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-red-600">开始游戏</button>
+							class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-400">开始游戏</button>
 				</div>
 			</div>
 		</div>
-		<div id="rigth">
-			<div class="next"></div>
-			<div id="level"><span>Level:</span><span class="level">1</span></div>
-			<div id="score"><span>Score:</span><span class="score">0</span></div>
+		<div id="right">
+			<div class="next box2">
+                <div class="box2_corner_lf"></div>
+                <div class="box2_corner_rt"></div>
+                <div class="box2_ribbon"></div>
+            </div>
+
 			<div align="center">
 				<button id="pause" style="margin:10px auto 5px auto;color: #fff;"
-						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-red-600">暂停</button>
+						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-400">暂停</button>
 			</div>
 
+            <div class="box3">
+                <p id="score">当前得分:<span class="score" style="font-weight: 500;margin-left: 10px;">0</span></p>
+                <p id="level">等级:<span style="font-weight: 500;margin-left: 10px;">1</span></p>
+            </div>
+
 		</div>
+	</div>
+
+    <div style="width: 100%;height: 50px;" class="extension">
+        <div id="noExtension" style="margin: 10px 0;display: none;text-align: center;color: #ddd;">
+            提示: 请安装
+            <a target="_blank" href="https://github.com/ChengOrangeJu/WebExtensionWallet" style="color: #849fff;">WebExtensionWallet</a> 来使用星云链俄罗斯方块
+        </div>
+        <div style="margin: 10px 0;text-align: center;color: #ddd;">
+            使用<a href="https://nebulas.io/" style="color: #849fff;">星云链</a>驱动，
+            <a href="https://incentive.nebulas.io/cn/signup.html?invite=pvkCA" style="color: #849fff;">提交DAPP获得100NAS</a>
+        </div>
+    </div>
+
+	<div id="myModal" class="mdui-table-fluid" style="display: none;">
+        <table class="mdui-table mdui-table-hoverable">
+            <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>用户地址</th>
+                    <th>得分</th>
+                </tr>
+            </thead>
+            <tbody id="tableContent">
+            </tbody>
+        </table>
 	</div>
 
 	<script src="js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
@@ -63,17 +101,110 @@
 
 		//检查“webExtensionWallet”扩展是否已安装
 		if(typeof(webExtensionWallet) === "undefined") {
-
+            $("#noExtension").show();
 		}
 
 		var dappAddress = "n1kyTRfnJj9gyaJHBCwFRWBUNvRX285zfzG";
+		var highPoint = 0;
 
         $('#startGame').click(function() {
-            $('.mask').css({
-                'display': 'none'
-            })
-            new Game()
-        })
+            getUserAndRecord();
+        });
+
+        function getUserAndRecord() {
+            var to = dappAddress;
+            var value = "0";
+            var callFunction = "getRecord";
+            var callArgs = "[]";
+            nebPay.simulateCall(to, value, callFunction, callArgs, {
+                listener: cbSearch
+            });
+        }
+
+        function cbSearch(resp) {
+            if(!resp.result) return;
+            var result = eval(JSON.parse(resp.result));
+            if(result !== 'null') {
+                $("#userName").text(result.address);
+                highPoint = result.point;
+                $("#historyPoint").text(result.point);
+                $('.mask').css({
+                    'display': 'none'
+                });
+                new Game();
+            }
+        }
+
+		function gameover(){
+            layer.msg("游戏结束！！");
+			if($(".score").text() > highPoint){
+                layer.open({
+                    content: '恭喜玩家，您的得分超过您的历史最高得分，是否将数据记录到公链上面去？',
+					btn: ['确定', '取消'],
+					yes: function(index, layero){
+                        var to = dappAddress;
+                        var value = "0";
+                        var callFunction = "setRocord";
+                        var callArgs = [];
+                        callArgs.push($(".score").text());
+                        highPoint = $(".score").text();
+                        nebPay.call(to, value, callFunction, JSON.stringify(callArgs), {
+                            listener: cbPush
+                        });
+                        layer.close(index);
+                    },
+					btn2: function(index, layero){
+                        layer.close(index);
+                    },
+					cancel: function(){
+                        //右上角关闭回调
+                        layer.close();
+                    }
+                });
+			}
+		}
+
+        function cbPush(resp) {
+            setTimeout(function() {
+                $("#historyPoint").text(highPoint);
+            }, 15000);
+        }
+
+        $('#getRankingList').click(function() {
+            var to = dappAddress;
+            var value = "0";
+            var callFunction = "getRankingList";
+            var callArgs = [];
+            callArgs.push(3);
+            nebPay.simulateCall(to, value, callFunction, JSON.stringify(callArgs), {
+                listener: cbSearch2
+            });
+        });
+
+        function cbSearch2(resp) {
+            if(!resp.result) return;
+            var result = eval(JSON.parse(resp.result));
+            if(result !== 'null') {
+                $('#tableContent').empty();
+                for(var i=0; i<result.length; i++){
+                    var html = "<tr><td>"+i+"</td><td>"+result[i].address
+                        +"</td><td>"+result[i].point+"</td></tr>";
+                    $("#tableContent").append(html);
+                }
+                layer.open({
+                    title:"历史排行榜",
+                    skin: 'layui-layer-lan',
+                    type: 1,
+                    scrollbar: false,
+                    area:['620px'],
+                    content: $('#myModal'),
+                    cancel: function(){
+                        layer.close();
+                    }
+                });
+                $('#myModal').show();
+            }
+        }
 	</script>
 </body>
 

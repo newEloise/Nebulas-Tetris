@@ -40,6 +40,9 @@ TetrisContract.prototype = {
     init: function () {
         this.size = 0;
     },
+    get:function (index) {
+       return this.records.get(index);
+    },
     getRecord: function () {
         var addr = Blockchain.transaction.from;
         for(var i=0; i<this.size; i++){
@@ -50,8 +53,8 @@ TetrisContract.prototype = {
         }
         return null;
     },
-    getRankingList: function () {
-        //取所有记录的前五名
+    getRankingList: function (num) {
+        //取所有记录的前N名
         var result  = [];
         var arr = new Array();
         for(var i=0; i<this.size; i++){
@@ -66,7 +69,7 @@ TetrisContract.prototype = {
                 }
             }
         }
-        for(var i=0; i<5; i++){
+        for(var i=0; i<num; i++){
             var object = arr[i];
             result.push(object);
         }

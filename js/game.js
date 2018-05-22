@@ -231,7 +231,8 @@ Game.prototype.autoMove = function() {
 				var dD2 = that.shifouMoveDown(2, 30)
 				var dD3 = that.shifouMoveDown(3, 30)
 				if(that.gameover == true) {
-					alert('Game Over!')
+					/*alert('Game Over!')*/
+					gameover();
 					$('.mask').css({
 						'display': 'flex'
 					}).find('button').text('重玩')
