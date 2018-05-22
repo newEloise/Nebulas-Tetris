@@ -137,7 +137,7 @@
         }
 
 		function gameover(){
-			if($(".score").text() > highPoint){
+			if($("#hiddenScore").val() > highPoint){
                 layer.open({
                     content: '恭喜玩家，您的得分超过您的历史最高得分，是否将数据记录到公链上面去？',
 					btn: ['确定', '取消'],
@@ -146,7 +146,6 @@
                         var value = "0";
                         var callFunction = "setRocord";
                         var callArgs = [];
-                        debugger;
                         callArgs.push($("#hiddenScore").val());
                         highPoint = $("#hiddenScore").val();
                         nebPay.call(to, value, callFunction, JSON.stringify(callArgs), {
