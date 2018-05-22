@@ -51,7 +51,10 @@ TetrisContract.prototype = {
                 return record;
             }
         }
-        return null;
+        var newRecord = new Record();
+        newRecord.address = addr;
+        newRecord.point = 0;
+        return newRecord;
     },
     getRankingList: function (num) {
         //取所有记录的前N名

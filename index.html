@@ -17,7 +17,7 @@
 		<div id="left">
             <div class="box">
                 <p id="user">当前用户地址:</p>
-                <p id="userName">n1bUSoYrgTr7iBUR1LDS5svjLBd6wGdB4Ur</p>
+                <p id="userName"></p>
                 <p id="historyScore">历史最高得分:</p>
                 <p id="historyPoint">0</p>
                 <div class="box_ribbon"></div>
@@ -57,6 +57,7 @@
 
             <div class="box3">
                 <p id="score">当前得分:<span class="score" style="font-weight: 500;margin-left: 10px;">0</span></p>
+                <input style="display: none;" id="hiddenScore"></input>
                 <p id="level">等级:<span style="font-weight: 500;margin-left: 10px;">1</span></p>
             </div>
 
@@ -104,7 +105,7 @@
             $("#noExtension").show();
 		}
 
-		var dappAddress = "n1kyTRfnJj9gyaJHBCwFRWBUNvRX285zfzG";
+		var dappAddress = "n1hjciSPkfZc85oQNWNDHuy4X15EjYjA2mP";
 		var highPoint = 0;
 
         $('#startGame').click(function() {
@@ -136,7 +137,6 @@
         }
 
 		function gameover(){
-            layer.msg("游戏结束！！");
 			if($(".score").text() > highPoint){
                 layer.open({
                     content: '恭喜玩家，您的得分超过您的历史最高得分，是否将数据记录到公链上面去？',
@@ -146,8 +146,9 @@
                         var value = "0";
                         var callFunction = "setRocord";
                         var callArgs = [];
-                        callArgs.push($(".score").text());
-                        highPoint = $(".score").text();
+                        debugger;
+                        callArgs.push($("#hiddenScore").val());
+                        highPoint = $("#hiddenScore").val();
                         nebPay.call(to, value, callFunction, JSON.stringify(callArgs), {
                             listener: cbPush
                         });
@@ -161,6 +162,8 @@
                         layer.close();
                     }
                 });
+			}else{
+                layer.alert('游戏结束，很遗憾您的得分未超过历史最高分', {icon: 5});
 			}
 		}
 
@@ -187,12 +190,14 @@
             if(result !== 'null') {
                 $('#tableContent').empty();
                 for(var i=0; i<result.length; i++){
-                    var html = "<tr><td>"+i+"</td><td>"+result[i].address
-                        +"</td><td>"+result[i].point+"</td></tr>";
-                    $("#tableContent").append(html);
+                    if(result[i] != null){
+                        var html = "<tr><td>"+(i+1)+"</td><td>"+result[i].address
+                            +"</td><td>"+result[i].point+"</td></tr>";
+                        $("#tableContent").append(html);
+					}
                 }
                 layer.open({
-                    title:"历史排行榜",
+                    title:"得分排行榜",
                     skin: 'layui-layer-lan',
                     type: 1,
                     scrollbar: false,

@@ -238,6 +238,7 @@ Game.prototype.autoMove = function() {
 					}).find('button').text('重玩')
 					$('#gameBox').find('span').remove()
 					$('.next').find('span').remove()
+                    $('#hiddenScore').val(that.score)
 					$('.score').text('0')
 				} else {
 					$.when(dD0, dD1, dD2, dD3).then(function() {
