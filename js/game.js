@@ -231,8 +231,6 @@ Game.prototype.autoMove = function() {
 				var dD2 = that.shifouMoveDown(2, 30)
 				var dD3 = that.shifouMoveDown(3, 30)
 				if(that.gameover == true) {
-					/*alert('Game Over!')*/
-					gameover();
 					$('.mask').css({
 						'display': 'flex'
 					}).find('button').text('重玩')
@@ -240,6 +238,8 @@ Game.prototype.autoMove = function() {
 					$('.next').find('span').remove()
                     $('#hiddenScore').val(that.score)
 					$('.score').text('0')
+                    /*alert('Game Over!')*/
+                    gameover();
 				} else {
 					$.when(dD0, dD1, dD2, dD3).then(function() {
 						that.y += 30
