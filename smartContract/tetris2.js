@@ -41,20 +41,23 @@ TetrisContract.prototype = {
         this.size = 0;
     },
     get:function (index) {
-       return this.records.get(index);
+        return this.records.get(index);
     },
-    getRecord: function () {
+    getHighPoint: function () {
+        var highPoint = 0;
         var addr = Blockchain.transaction.from;
         for(var i=0; i<this.size; i++){
             var record = this.records.get(i);
             if(record.address == addr){
-                return record;
+                if(record.point > highPoint){
+                    highPoint = record.point;
+                }
             }
         }
-        var newRecord = new Record();
-        newRecord.address = addr;
-        newRecord.point = 0;
-        return newRecord;
+        var record = new Record();
+        record.address = addr;
+        record.point = highPoint;
+        return record;
     },
     getRankingList: function (num) {
         //取所有记录的前N名
@@ -80,31 +83,13 @@ TetrisContract.prototype = {
     },
     setRocord: function(point, submitTime){
         var addr = Blockchain.transaction.from;
-        var flag = 0;
-        for(var i=0; i<this.size; i++){
-            var record = this.records.get(i);
-            if(record.address == addr){
-                if (parseInt(point) > parseInt(record.point)) {
-                    var newRecord = new Record();
-                    newRecord.id = i;
-                    newRecord.address = addr;
-                    newRecord.submitTime = submitTime;
-                    newRecord.point = point;
-                    this.records.set(i, newRecord);
-                    flag = 1;
-                    break;
-                }
-            }
-        }
-        if(flag == 0){
-            var newRecord = new Record();
-            newRecord.id = this.size;
-            newRecord.address = addr;
-            newRecord.submitTime = submitTime;
-            newRecord.point = point;
-            this.records.set(this.size, newRecord);
-            this.size += 1;
-        }
+        var newRecord = new Record();
+        newRecord.id = this.size;
+        newRecord.address = addr;
+        newRecord.submitTime = submitTime;
+        newRecord.point = point;
+        this.records.set(this.size, newRecord);
+        this.size += 1;
     },
     getLen :function () {
         return this.size;

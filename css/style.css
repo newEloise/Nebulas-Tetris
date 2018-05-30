@@ -25,7 +25,7 @@ body{
 	width: 710px;
 	font-size: 1.9em;
 	margin: 0 auto;
-    padding: 1em 0;
+    padding: 0.5em 0;
 	text-shadow: 0 2px 1px black;
 }
 .bg {
@@ -58,6 +58,10 @@ body{
 	height: 450px;
 	overflow: hidden;
 	position: relative;
+}
+
+.rule-p{
+	margin: 10px;
 }
 
 .mask {

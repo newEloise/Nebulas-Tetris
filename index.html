@@ -10,7 +10,8 @@
 
 <body>
     <div class="title">
-		<h1 id="title">星云链俄罗斯方块</h1>
+		<p id="title"><embed src="img/NebulasLogoIcon.svg" type="image/svg+xml" style="width: 60px;height: 60px;vertical-align:middle"/>
+			<span>星云链俄罗斯方块</span></p>
 	</div>
 
 	<div class="bg">
@@ -23,6 +24,8 @@
                 <div class="box_ribbon"></div>
             </div>
 			<div align="center">
+				<button id="getRule" style="margin: 5px auto 10px auto;color: #fff;width: 105px;"
+						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-400">规则说明</button>
 				<button id="getRankingList" style="margin: 5px auto 10px auto;color: #fff;"
 						class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-blue-400">查看排行榜</button>
 			</div>
@@ -82,11 +85,20 @@
                     <th>排名</th>
                     <th>用户地址</th>
                     <th>得分</th>
+					<th>完成时间</th>
                 </tr>
             </thead>
             <tbody id="tableContent">
             </tbody>
         </table>
+	</div>
+
+	<div id="ruleModal" class="mdui-table-fluid" style="display: none;">
+		<p class="rule-p">1、点击"开始游戏"按钮，游戏开始，左侧将出现您的历史最高得分记录</p>
+		<p class="rule-p">2、用键盘←→键控制左右移动，↑键可以将积木变形旋转，↓键可以加速下移</p>
+		<p class="rule-p">3、右侧"暂停"键可以暂时停止游戏，点击"开始"游戏恢复运行</p>
+		<p class="rule-p">4、游戏结束后，可上传游戏成绩，并根据游戏成绩进行世界排名</p>
+		<p class="rule-p">5、上传游戏成绩仅仅消耗一点点gas</p>
 	</div>
 
 	<script src="js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
@@ -105,8 +117,23 @@
             $("#noExtension").show();
 		}
 
-		var dappAddress = "n1qv8NQaVLruhyN6hk5TXL3geUBUq8ZUbus";
+		var dappAddress = "n1kdA4wMQ2dgQWmhUfmFKYvefnTaXyiauNM";
 		var highPoint = 0;
+
+        $('#getRule').click(function() {
+            layer.open({
+                title:"规则说明",
+                skin: 'layui-layer-lan',
+                type: 1,
+                scrollbar: false,
+                area:['400px'],
+                content: $('#ruleModal'),
+                cancel: function(){
+                    layer.close();
+                }
+            });
+            $('#ruleModal').show();
+        });
 
         $('#startGame').click(function() {
             getUserAndRecord();
@@ -115,7 +142,7 @@
         function getUserAndRecord() {
             var to = dappAddress;
             var value = "0";
-            var callFunction = "getRecord";
+            var callFunction = "getHighPoint";
             var callArgs = "[]";
             nebPay.simulateCall(to, value, callFunction, callArgs, {
                 listener: cbSearch
@@ -137,33 +164,36 @@
         }
 
 		function gameover(){
+            var content = "";
 			if($("#hiddenScore").val() > highPoint){
-                layer.open({
-                    content: '恭喜玩家，您的得分超过您的历史最高得分，是否将数据记录到公链上面去？',
-					btn: ['确定', '取消'],
-					yes: function(index, layero){
-                        var to = dappAddress;
-                        var value = "0";
-                        var callFunction = "setRocord";
-                        var callArgs = [];
-                        callArgs.push($("#hiddenScore").val());
-                        highPoint = $("#hiddenScore").val();
-                        nebPay.call(to, value, callFunction, JSON.stringify(callArgs), {
-                            listener: cbPush
-                        });
-                        layer.close(index);
-                    },
-					btn2: function(index, layero){
-                        layer.close(index);
-                    },
-					cancel: function(){
-                        //右上角关闭回调
-                        layer.close();
-                    }
-                });
+                content = '恭喜玩家，您的得分超过您的历史最高得分，是否将数据记录到公链上面去？';
 			}else{
-                layer.alert('游戏结束，很遗憾您的得分未超过历史最高分', {icon: 5});
+                content = '游戏结束，很遗憾您的得分未超过历史最高分，但仍然超过很多玩家，是否将数据记录到公链上面去？';
 			}
+            layer.open({
+                content: content,
+                btn: ['确定', '取消'],
+                yes: function(index, layero){
+                    var to = dappAddress;
+                    var value = "0";
+                    var callFunction = "setRocord";
+                    var callArgs = [];
+                    callArgs.push($("#hiddenScore").val());
+                    callArgs.push(getDateStr(new Date()));
+                    highPoint = $("#hiddenScore").val();
+                    nebPay.call(to, value, callFunction, JSON.stringify(callArgs), {
+                        listener: cbPush
+                    });
+                    layer.close(index);
+                },
+                btn2: function(index, layero){
+                    layer.close(index);
+                },
+                cancel: function(){
+                    //右上角关闭回调
+                    layer.close();
+                }
+            });
 		}
 
         function cbPush(resp) {
@@ -177,7 +207,7 @@
             var value = "0";
             var callFunction = "getRankingList";
             var callArgs = [];
-            callArgs.push(3);
+            callArgs.push(10);
             nebPay.simulateCall(to, value, callFunction, JSON.stringify(callArgs), {
                 listener: cbSearch2
             });
@@ -191,7 +221,7 @@
                 for(var i=0; i<result.length; i++){
                     if(result[i] != null){
                         var html = "<tr><td>"+(i+1)+"</td><td>"+result[i].address
-                            +"</td><td>"+result[i].point+"</td></tr>";
+                            +"</td><td>"+result[i].point+"</td><td>"+result[i].submitTime+"</td></tr>";
                         $("#tableContent").append(html);
 					}
                 }
@@ -200,7 +230,7 @@
                     skin: 'layui-layer-lan',
                     type: 1,
                     scrollbar: false,
-                    area:['620px'],
+                    area:['680px'],
                     content: $('#myModal'),
                     cancel: function(){
                         layer.close();
@@ -209,6 +239,22 @@
                 $('#myModal').show();
             }
         }
+
+        function getDateStr(date) {
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            var h = date.getHours();
+            h= h < 10 ? ('0' + h) : h;
+            var minute = date.getMinutes();
+            minute = minute < 10 ? ('0' + minute) : minute;
+            var second=date.getSeconds();
+            second = second < 10 ? ('0' + second) : second;
+            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        }
+
 	</script>
 </body>
 
