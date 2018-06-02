@@ -117,7 +117,7 @@
             $("#noExtension").show();
 		}
 
-		var dappAddress = "n1kdA4wMQ2dgQWmhUfmFKYvefnTaXyiauNM";
+		var dappAddress = "n1erkhAkAcmN8hYfbcsuJbexSJYysAm5EZd";
 		var highPoint = 0;
 
         $('#getRule').click(function() {
@@ -207,7 +207,7 @@
             var value = "0";
             var callFunction = "getRankingList";
             var callArgs = [];
-            callArgs.push(50);
+            callArgs.push(10);
             nebPay.simulateCall(to, value, callFunction, JSON.stringify(callArgs), {
                 listener: cbSearch2
             });

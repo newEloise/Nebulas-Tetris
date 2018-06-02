@@ -49,7 +49,7 @@ TetrisContract.prototype = {
         for(var i=0; i<this.size; i++){
             var record = this.records.get(i);
             if(record.address == addr){
-                if(record.point > highPoint){
+                if(parseInt(record.point) > parseInt(highPoint)){
                     highPoint = record.point;
                 }
             }
