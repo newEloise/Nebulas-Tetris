@@ -75,6 +75,9 @@ TetrisContract.prototype = {
                 }
             }
         }
+        if(num > this.size){
+            num = this.size;
+        }
         for(var i=0; i<num; i++){
             var object = arr[i];
             result.push(object);
